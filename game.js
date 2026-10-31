@@ -880,9 +880,16 @@ function speechBubble(text, x, y) {
 
 
 // ------------------------------------------------------------
-// 14. THE GAME LOOP - runs 60 times every second
+// 14. THE GAME LOOP - runs exactly 60 times every second
 // ------------------------------------------------------------
-function gameLoop() {
+// Screens refresh at different speeds (60, 120, 144 times a second...).
+// To make the game run at the same speed on every screen, we only move
+// the game forward one step every 1/60 of a second.
+const STEP_TIME = 1000 / 60;   // one game step = 16.7 milliseconds
+let nextStepTime = 0;          // when the next game step is due
+
+// one step of the game
+function runOneStep() {
   if (scene === "intro") {
     updateIntro();
   } else if (scene === "play") {
@@ -893,7 +900,19 @@ function gameLoop() {
   } else if (scene === "win") {
     drawWin();
   }
-  requestAnimationFrame(gameLoop);   // run again on the next frame
 }
 
-gameLoop();   // start!
+function gameLoop(now) {
+  // if we fell far behind (for example the tab was hidden), don't rush to catch up
+  if (now - nextStepTime > 250) nextStepTime = now;
+
+  // do every game step that is due by now (on a fast screen, often none)
+  while (now >= nextStepTime) {
+    runOneStep();
+    nextStepTime += STEP_TIME;
+  }
+
+  requestAnimationFrame(gameLoop);   // check again on the next screen refresh
+}
+
+requestAnimationFrame(gameLoop);   // start!
