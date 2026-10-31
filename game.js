@@ -10,14 +10,14 @@
 // 1. SETTINGS - change these numbers to tune the game
 // ------------------------------------------------------------
 const SURVIVE_SECONDS = 60;   // how long until sunrise
-const GRAVITY = 0.8;          // how fast you fall after jumping
-const JUMP_POWER = 15;        // how high you jump
-const NORMAL_SPEED = 5.5;     // your normal running speed
-const MIN_SPEED = 3.5;        // slowest you can go
-const MAX_SPEED = 9.5;        // fastest you can go
-const TOFFEE_BOOST = 0.3;     // speed you gain from each toffee
-const HIT_SLOWDOWN = 1.2;     // speed you lose when you hit an obstacle
-const REAPER_SPEED = 5.7;     // the Reaper's starting speed
+const GRAVITY = 0.9;          // how fast you fall after jumping
+const JUMP_POWER = 16;        // how high you jump
+const NORMAL_SPEED = 6;       // your normal running speed
+const MIN_SPEED = 4;          // slowest you can go
+const MAX_SPEED = 11;         // fastest you can go
+const TOFFEE_BOOST = 0.35;    // speed you gain from each toffee
+const HIT_SLOWDOWN = 1.5;     // speed you lose when you hit an obstacle
+const REAPER_SPEED = 6.2;     // the Reaper's starting speed (he gets faster over time)
 const HIDE_SECONDS = 3;       // how long you hide in a pumpkin patch
 const STUN_SECONDS = 2;       // how long the Lantern Bomb knocks the Reaper down
 
@@ -256,19 +256,19 @@ function spawnThings() {
   obstacleTimer--;
   if (obstacleTimer <= 0) {
     addObstacle();
-    obstacleTimer = random(80, 160);   // a bit more time between obstacles now that you run slower
+    obstacleTimer = random(60, 120);
   }
 
   toffeeTimer--;
   if (toffeeTimer <= 0) {
     addToffees();
-    toffeeTimer = random(100, 170);
+    toffeeTimer = random(80, 140);
   }
 
   patchTimer--;
   if (patchTimer <= 0) {
     patches.push({ x: WIDTH + 40, width: 180, used: false });
-    obstacleTimer = Math.max(obstacleTimer, 120);  // no obstacles right next to the patch
+    obstacleTimer = Math.max(obstacleTimer, 90);   // no obstacles right next to the patch
     patchTimer = random(12, 16) * 60;              // next patch in 12-16 seconds
   }
 }
@@ -297,13 +297,13 @@ function moveThings() {
   scroll += speed;
   for (const o of obstacles) {
     o.x -= speed;
-    if (o.type === "bat") o.x -= 1;      // bats fly towards you a bit faster
+    if (o.type === "bat") o.x -= 1.5;    // bats fly towards you a bit faster
   }
   for (const t of toffeeList) t.x -= speed;
   for (const p of patches) p.x -= speed;
   for (const s of scythes) {
-    s.x += 5;          // scythes fly to the right, towards you
-    s.angle += 0.25;   // and spin
+    s.x += 7;          // scythes fly to the right, towards you
+    s.angle += 0.35;   // and spin
   }
 
   // remove things that have left the screen
@@ -368,7 +368,7 @@ function updateReaper() {
 
   if (reaperMode === "knockedDown") {
     knockedDownTimer--;
-    reaperX -= 1.6;   // you get away while he is on the ground
+    reaperX -= 2.4;   // you get away while he is on the ground
     if (knockedDownTimer <= 0) {
       if (hideTimer > 0) reaperMode = "searching";
       else reaperMode = "chasing";
@@ -412,7 +412,7 @@ function roadIsClear() {
 
 function updateBombs() {
   for (const b of bombs) {
-    b.x -= 8;   // the bomb flies left, towards the Reaper
+    b.x -= 11;   // the bomb flies left, towards the Reaper
     if (b.x < reaperX + 75 && reaperMode !== "knockedDown") {
       b.used = true;
       reaperMode = "knockedDown";
@@ -880,15 +880,9 @@ function speechBubble(text, x, y) {
 
 
 // ------------------------------------------------------------
-// 14. THE GAME LOOP - always runs at 60 steps per second
-//     (on fast screens, e.g. 120/144 Hz, the old loop ran
-//      the game too fast. Now it is capped at 60.)
+// 14. THE GAME LOOP - runs 60 times every second
 // ------------------------------------------------------------
-const STEP_MS = 1000 / 60;   // how long one game step should take
-let lastTime = 0;
-let leftover = 0;
-
-function oneStep() {
+function gameLoop() {
   if (scene === "intro") {
     updateIntro();
   } else if (scene === "play") {
@@ -899,20 +893,7 @@ function oneStep() {
   } else if (scene === "win") {
     drawWin();
   }
-}
-
-function gameLoop(now) {
-  if (!lastTime) lastTime = now;
-  leftover += Math.min(now - lastTime, 100);   // time since the last frame
-  lastTime = now;
-
-  // do one game step for every 1/60th of a second that has passed
-  while (leftover >= STEP_MS - 0.5) {
-    oneStep();
-    leftover -= STEP_MS;
-  }
-
   requestAnimationFrame(gameLoop);   // run again on the next frame
 }
 
-requestAnimationFrame(gameLoop);   // start!
+gameLoop();   // start!
