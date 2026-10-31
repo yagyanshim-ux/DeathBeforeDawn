@@ -10,14 +10,14 @@
 // 1. SETTINGS - change these numbers to tune the game
 // ------------------------------------------------------------
 const SURVIVE_SECONDS = 60;   // how long until sunrise
-const GRAVITY = 0.7;          // how fast you fall after jumping
-const JUMP_POWER = 14;        // how high you jump
-const NORMAL_SPEED = 4;       // your normal running speed
-const MIN_SPEED = 2.5;        // slowest you can go
-const MAX_SPEED = 7;          // fastest you can go
-const TOFFEE_BOOST = 0.25;    // speed you gain from each toffee
-const HIT_SLOWDOWN = 1;       // speed you lose when you hit an obstacle
-const REAPER_SPEED = 4.2;     // the Reaper's starting speed (he gets faster over time)
+const GRAVITY = 0.8;          // how fast you fall after jumping
+const JUMP_POWER = 15;        // how high you jump
+const NORMAL_SPEED = 5;       // your normal running speed
+const MIN_SPEED = 3.2;        // slowest you can go
+const MAX_SPEED = 8.5;        // fastest you can go
+const TOFFEE_BOOST = 0.3;     // speed you gain from each toffee
+const HIT_SLOWDOWN = 1.2;     // speed you lose when you hit an obstacle
+const REAPER_SPEED = 5.2;     // the Reaper's starting speed
 const HIDE_SECONDS = 3;       // how long you hide in a pumpkin patch
 const STUN_SECONDS = 2;       // how long the Lantern Bomb knocks the Reaper down
 
